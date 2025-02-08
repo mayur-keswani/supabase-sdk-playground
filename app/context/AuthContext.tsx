@@ -31,14 +31,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Fetch session on load (persists session on refresh)
   const fetchSession = async () => {
-    const supabase = getSupabaseClient();
-    if (supabase) {
-      const { data, error } = await supabase.auth.getSession();
-      if (error) {
-        console.error("Error fetching session:", error);
-      } else {
-        setUserSession(data?.session ?? null);
+    try {
+      const supabase = getSupabaseClient();
+      if (supabase) {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error("Error fetching session:", error);
+        } else {
+          setUserSession(data?.session ?? null);
+        }
       }
+    } catch (error) {
+      
     }
   };
 

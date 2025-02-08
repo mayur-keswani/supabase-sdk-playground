@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Supabase Query Playground
 
-## Getting Started
+An interactive Supabase SDK Playground that allows you to build, edit, and execute queries in real time. This tool provides a user-friendly interface to select tables, columns, filters, and generate queries dynamically using the Supabase JavaScript SDK.
 
-First, run the development server:
+## ✨ Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+✅ Query Builder – Select tables, columns, and apply filters to auto-generate Supabase queries.✅ Custom Query Editor – Write and execute your own Supabase SDK code.✅ Real-time Execution – Run queries and view formatted JSON responses instantly.✅ Authentication – Secure user sessions with Supabase Auth.✅ Clean UI – Intuitive UI built with React, Next.js, and Tailwind CSS.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### ⚡ Usage
+1️. Connect with Supabase Project using Supabase'URL and Anon Key.
+2. Login with your Supabase credentials.
+3. Use Query Builder to select a table, columns, and filters.
+4. Generate & Execute Queries dynamically using Supabase SDK.
+5. Write Custom Queries in the editor and run them with real-time results
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+### 🤝 Contributing
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+We welcome contributions! To contribute:
+1. Fork the repository
+2. Create a feature branch (git checkout -b feature-name)
+3. Commit changes (git commit -m "Add new feature")
+4. Push to your branch (git push origin feature-name)
+5. Open a Pull Request
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+### 📜 License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the MIT License.
