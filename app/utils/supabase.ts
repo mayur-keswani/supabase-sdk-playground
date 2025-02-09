@@ -46,6 +46,7 @@ export default function getSupabaseClient(
 
     // Validate credentials
     if ((!supabaseUrl || !supabaseAnonKey)) {
+      
       throw new Error("Supabase URL and Anon Key are required for initialization.");
     }
 

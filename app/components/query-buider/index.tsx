@@ -9,8 +9,8 @@ const QueryBuilder = () => {
   const [selectedFilters, setSelectedFilters] = useState<FilterType[]>([]);
 
   return (
-    <div className="flex gap-4 p-4 w-full">
-      <div className="w-1/3">
+    <div className="flex flex-col lg:flex-row w-full">
+      <div className="w-full lg:w-1/3">
         <QueryConfigurator
           selectedTable={selectedTable}
           selectedColumns={selectedColumns}
@@ -26,7 +26,7 @@ const QueryBuilder = () => {
           }}
         />
       </div>
-      <div className="w-2/3">
+      <div className="w-full lg:w-2/3">
         <QueryPreview
           selectedTable={selectedTable}
           selectedColumns={selectedColumns}
