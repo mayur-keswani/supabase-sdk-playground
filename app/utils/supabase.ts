@@ -10,15 +10,18 @@ let supabase: SupabaseClient | null = null;
  */
 export const getSupabaseConfig = () => {
 
-  if(typeof document!==undefined){
+  if (typeof window !== "undefined") {
     return {
       supabaseUrl: localStorage.getItem("supabaseUrl") ?? "",
       supabaseAnonKey: localStorage.getItem("supabaseAnonKey") ?? "",
     };
-  }else{
-    throw new Error("Something went wrong!")
+  } else {
+    return {
+      supabaseUrl: "",
+      supabaseAnonKey: "",
+    };
   }
- 
+
 };
 
 /**
@@ -33,14 +36,16 @@ export default function getSupabaseClient(
   supabaseUrl: string | null = SUPABASE_URL,
   supabaseAnonKey: string | null = SUPABASE_ANON_KEY
 ): SupabaseClient {
-  if (!supabase) {
-    // Fallback to localStorage if env variables are not available
-    const storedConfig = getSupabaseConfig();
+  if (!supabase && typeof window !== "undefined" ) {
+
+    // Only access localStorage in the browser  
+    let storedConfig = getSupabaseConfig();
+    
     supabaseUrl = supabaseUrl || storedConfig.supabaseUrl;
     supabaseAnonKey = supabaseAnonKey || storedConfig.supabaseAnonKey;
 
     // Validate credentials
-    if (!supabaseUrl || !supabaseAnonKey) {
+    if ((!supabaseUrl || !supabaseAnonKey)) {
       throw new Error("Supabase URL and Anon Key are required for initialization.");
     }
 
@@ -48,12 +53,13 @@ export default function getSupabaseClient(
     supabase = createClient(supabaseUrl, supabaseAnonKey);
     console.log("✅ Supabase client initialized.");
 
-    // Store credentials in localStorage for reuse
-    localStorage.setItem("supabaseUrl", supabaseUrl);
-    localStorage.setItem("supabaseAnonKey", supabaseAnonKey);
+    if (typeof window !== "undefined") {    // Store credentials in localStorage for reuse
+      localStorage.setItem("supabaseUrl", supabaseUrl);
+      localStorage.setItem("supabaseAnonKey", supabaseAnonKey);
+    }
   } else {
     console.log("♻️ Reusing existing Supabase client.");
   }
 
-  return supabase;
+  return supabase!;
 }
