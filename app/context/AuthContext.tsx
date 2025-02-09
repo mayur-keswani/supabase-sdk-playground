@@ -9,7 +9,7 @@ import {
   useCallback,
 } from "react";
 import getSupabaseClient from "../utils/supabase";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 interface AuthContextType {
   userSession: Session | null;
@@ -27,6 +27,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isSupabaseConnected, setIsSupabaseConnected] =
     useState<boolean>(false);
   const router = useRouter();
+  const pathname = usePathname();
+
 
   const initializeSupabase = async () => {
     try {
@@ -52,7 +54,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error("Supabase connection failed:", error);
       setIsSupabaseConnected(false);
-      router.replace("/connect"); // Redirect to the connect page
+      if (pathname !== "/") 
+        router.replace("/connect"); // Redirect to the connect page
     }
   };
 
@@ -69,7 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     } catch (error) {}
     setUserSession(null); // Clear session state
-    router.push("/login"); // Redirect to login page
+   
   }, [router]);
 
   const setAuthData = useCallback((payload: Session) => {
@@ -88,4 +91,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </AuthContext.Provider>
   );
-};
+}

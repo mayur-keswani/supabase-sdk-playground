@@ -37,6 +37,7 @@ export default function Dashboard() {
   async function onLogout() {
     try {
       clearUserSession();
+      router.push("/login"); // Redirect to login page
     } catch (error) {
       notify("Something went wrong!", "error");
     }
