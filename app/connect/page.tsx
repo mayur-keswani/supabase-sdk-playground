@@ -1,10 +1,9 @@
 "use client";
 
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import getSupabaseClient from "../utils/supabase";
 import { useNotification } from "../context/NotificationContext";
-import { DatabaseSchemaContext } from "../context/DatabaseSchemaContext";
 
 export default function ConnectPage() {
   const [supabaseUrl, setSupabaseUrl] = useState("");

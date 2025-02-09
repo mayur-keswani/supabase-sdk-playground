@@ -36,7 +36,7 @@ export default function Dashboard() {
   }
   async function onLogout() {
     try {
-      let supabase = getSupabaseClient();
+      const supabase = getSupabaseClient();
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       clearUserSession();

@@ -12,7 +12,7 @@ export default function Home() {
 
   useEffect(() => {
     try {
-      let supabase = getSupabaseClient();
+      const supabase = getSupabaseClient();
       if (supabase) {
         setIsSupabaseConnected(true);
       } else setIsSupabaseConnected(false);

@@ -3,7 +3,6 @@
 import { Session } from "@supabase/supabase-js";
 import {
   createContext,
-  useContext,
   useState,
   ReactNode,
   useEffect,
@@ -50,9 +49,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     fetchSession();
   }, []);
 
-  const getColumns = () => {
-    return [];
-  };
+  
   return (
     <AuthContext.Provider
       value={{ userSession, setAuthData, clearUserSession }}
