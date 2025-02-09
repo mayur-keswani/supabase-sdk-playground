@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import getSupabaseClient from "../../utils/supabase";
+import { SelectedColumnsType } from "@/app/custom-types";
 
 interface FilterType {
   column: string;
@@ -11,7 +12,7 @@ interface FilterType {
 
 interface QueryBuilderProps {
   selectedTable: string | null;
-  selectedColumns: string[];
+  selectedColumns: SelectedColumnsType;
   selectedFilters: FilterType[];
 }
 
@@ -23,11 +24,23 @@ const QueryPreview: React.FC<QueryBuilderProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [response, setResponse] = useState<string | null>(null);
 
-  /** Generates the SQL-like query based on the selected table, columns, and filters */
-  const generateQuery = useMemo(() => {
-    if (!selectedTable || selectedColumns.length === 0) return "";
+  const buildSelectQuery = (columns: SelectedColumnsType): string => {
+    return Object.entries(columns)
+      .map(([key, value]) => {
+        if (typeof value === "object" && Object.keys(value).length > 0) {
+          return `${key}(${buildSelectQuery(value)})`; // Recursive FK handling
+        }
+        return key; // Base case: simple column
+      })
+      .join(", ");
+  };
 
-    let query = `supabase.from('${selectedTable}').select('${selectedColumns.join(", ")}')`;
+  const generateQuery = useMemo(() => {
+
+    if (!selectedTable || Object.keys(selectedColumns).length === 0) return "";
+    const selectString = buildSelectQuery(selectedColumns);
+
+    let query = `supabase.from('${selectedTable}').select('${selectString}')`;
 
     selectedFilters.forEach((filter) => {
       if (filter.column && filter.value) {

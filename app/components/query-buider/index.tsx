@@ -1,11 +1,11 @@
-import { FilterType } from "@/app/custom-types";
+import { FilterType, SelectedColumnsType } from "@/app/custom-types";
 import React, { useState } from "react";
 import QueryConfigurator from "./QueryConfigurator";
 import QueryPreview from "./QueryPreview";
 
 const QueryBuilder = () => {
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
-  const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+  const [selectedColumns, setSelectedColumns] = useState<SelectedColumnsType>({});
   const [selectedFilters, setSelectedFilters] = useState<FilterType[]>([]);
 
   return (
@@ -18,12 +18,8 @@ const QueryBuilder = () => {
           updateSelectedTable={(value: string) => {
             setSelectedTable(value);
           }}
-          updateSelectedColumns={(col: string) => {
-            setSelectedColumns((prev) =>
-              prev.includes(col)
-                ? prev.filter((c) => c !== col)
-                : [...prev, col]
-            );
+          updateSelectedColumns={(values: SelectedColumnsType) => {
+            setSelectedColumns(values)
           }}
           updateSelectedFilters={(values: FilterType[]) => {
             setSelectedFilters(values);

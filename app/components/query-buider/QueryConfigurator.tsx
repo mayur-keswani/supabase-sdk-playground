@@ -1,16 +1,14 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useMemo } from "react";
 import { DatabaseSchemaContext } from "@/app/context/DatabaseSchemaContext";
-import { FilterType } from "@/app/custom-types";
-import { nanoid } from 'nanoid'
-
-
+import { Column, SelectedColumnsType, FilterType } from "@/app/custom-types";
+import { nanoid } from "nanoid";
 
 interface PropsType {
   selectedTable: string | null;
-  selectedColumns: string[];
+  selectedColumns: SelectedColumnsType;
   selectedFilters: FilterType[];
   updateSelectedTable: (table: string) => void;
-  updateSelectedColumns: (column: string) => void;
+  updateSelectedColumns: (values: SelectedColumnsType) => void;
   updateSelectedFilters: (filters: FilterType[]) => void;
 }
 
@@ -22,70 +20,126 @@ const Builder: React.FC<PropsType> = ({
   updateSelectedColumns,
   updateSelectedFilters,
 }) => {
+  const { databaseSchema: schema } = useContext(DatabaseSchemaContext)!;
 
-  const {databaseSchema:schema} = useContext(DatabaseSchemaContext)!;
+  const columns = useMemo(() => {
+    return selectedTable ? schema?.[selectedTable]?.columns : [];
+  }, [selectedTable]);
 
-  const columns = useMemo(()=>{ return selectedTable? schema?.[selectedTable]?.columns : []},[selectedTable])!
-  
+  const isSelected=(obj: any, path: string[])=>{
+    let current = obj;
+    for (let i = 0; i < path.length - 1; i++) {
+      current[path[i]] = current[path[i]] || {};
+      current = current[path[i]];
+    }
+   return current[path[path.length - 1]]
+  }
 
-  const addFilter = () => {
-    let updatedFilters = selectedFilters.concat({ id: nanoid(),column: "", operator: "=", value: "" })
-    updateSelectedFilters(updatedFilters);
+  const handleColumnChange = (
+    column: Column,
+    checked: boolean,
+    parentPath: string[] = []
+  ) => {
+    let updatedColumns = { ...selectedColumns };
+    let path = [...parentPath, column.title]; // Build path dynamically
+
+    // Helper function to set nested values
+    const setNestedValue = (obj: any, path: string[], value: any) => {
+      let current = obj;
+      for (let i = 0; i < path.length - 1; i++) {
+        current[path[i]] = current[path[i]] || {};
+        current = current[path[i]];
+      }
+      current[path[path.length - 1]] = value;
+    };
+
+    if (checked) {
+      if (column.fk) {
+        // Ensure nested structure for FK
+        setNestedValue(updatedColumns, path, {});
+      } else {
+        // Simple column
+        setNestedValue(updatedColumns, path, true);
+      }
+    } else {
+      // Helper function to remove a nested key
+      const deleteNestedKey = (obj: any, path: string[]) => {
+        let current = obj;
+        for (let i = 0; i < path.length - 1; i++) {
+          if (!current[path[i]]) return;
+          current = current[path[i]];
+        }
+        delete current[path[path.length - 1]];
+      };
+      deleteNestedKey(updatedColumns, path);
+    }
+
+    updateSelectedColumns(updatedColumns);
   };
 
-  const updateFilter = (id: string, key:'column'|'operator'|'value', value: string) => {
-    
-    let updatedFilters =  selectedFilters.map((filt) => {
-      if(filt.id === id)
-        return { ...filt, [key] :value };
-      else 
-        return filt;
-    });
+  const renderColumns = (
+    table: string,
+    level: number = 1,
+    parentPath: string[] = []
+  ) => {
+    // console.log({level})
+    if (level > 3) return <>
+      <br/>
+      <span className="text-red-600 text-sm">Sorry, Currently we are only supporting join till 3 levels</span>
+      </>; // Limit recursion to 2 levels
 
-    updateSelectedFilters(updatedFilters);
+    const cols = schema?.[table]?.columns ?? [];
+    return cols.map((col) => (
+      <div key={col.title} className="ml-4 mb-2">
+        <label className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            // checked={!!parentPath.reduce((obj, key) => obj?.[key], selectedColumns)?.[col.title]}
+            onChange={(e) =>
+              handleColumnChange(col, e.target.checked, parentPath)
+            }
+            className="accent-blue-600"
+          />
+          <span>{col.title}</span>
+        </label>
+
+        {/* Recursively render foreign key columns */}
+        {col.fk && isSelected(selectedColumns,[...parentPath,col.title]) && (
+          <div className="ml-6 mt-1 border-l pl-4">
+            <span className="text-sm text-gray-600">
+              Select columns from {col.fk.split(".")[0]}:
+            </span>
+            {renderColumns(col.fk.split(".")[0], level + 1, [
+              ...parentPath,
+              col.title,
+            ])}
+          </div>
+        )}
+      </div>
+    ));
   };
-
-
-  const removeFilter = (id: string) => {
-    let updatedFilters = selectedFilters.filter((filt) => filt.id !== id);
-
-    updateSelectedFilters(updatedFilters);
-  };
-  console.log({schema})
 
   return (
     <div className="h-lvh p-4 border-r border-gray-300 bg-white shadow-md rounded-lg">
-      {/* Select Table */}
       <h5 className="text-lg font-semibold mb-3">Select Table & Columns</h5>
       <select
         className="w-full p-2 mb-3 border rounded-md"
-        value={selectedTable ?? ''}
+        value={selectedTable ?? ""}
         onChange={(e) => updateSelectedTable(e.target.value)}
       >
         <option value="">-- Select Table --</option>
-        {Object.keys(schema??[]).map((table) => (
+        {Object.keys(schema ?? {}).map((table) => (
           <option key={table} value={table}>
             {table}
           </option>
         ))}
       </select>
 
-      {/* Select Columns */}
-      {Object.keys(columns).length > 0 && (
+      {selectedTable && (
         <div>
           <h6 className="text-md font-medium mb-2">Select Columns</h6>
           <div className="h-[300px] overflow-y-scroll">
-            {(columns).map((col) => (
-              <label key={col.title} className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={selectedColumns.includes(col.title)}
-                  onChange={() => updateSelectedColumns(col.title)}
-                  className="accent-blue-600"
-                />
-                <span>{col.title}</span>
-              </label>
-            ))}
+            {renderColumns(selectedTable)}
           </div>
         </div>
       )}
@@ -96,20 +150,32 @@ const Builder: React.FC<PropsType> = ({
         <div key={filter.id} className="flex items-center gap-2 mt-2">
           <select
             value={filter.column}
-            onChange={(e) => updateFilter(filter.id,'column', e.target.value)}
+            onChange={(e) => {
+              updateSelectedFilters(
+                selectedFilters.map((f) =>
+                  f.id === filter.id ? { ...f, column: e.target.value } : f
+                )
+              )
+            }}
             className="w-1/3 p-2 border rounded-md"
           >
             <option value="">Column</option>
-            {Object.keys(columns).map((col) => (
-              <option key={col} value={col}>
-                {col}
+            {columns?.map((col) => (
+              <option key={col.title} value={col.title}>
+                {col.title}
               </option>
             ))}
           </select>
 
           <select
             value={filter.operator}
-            onChange={(e) => updateFilter(filter.id, "operator", e.target.value)}
+            onChange={(e) =>
+              updateSelectedFilters(
+                selectedFilters.map((f) =>
+                  f.id === filter.id ? { ...f, operator: e.target.value } : f
+                )
+              )
+            }
             className="w-1/4 p-2 border rounded-md"
           >
             <option value="=">=</option>
@@ -123,12 +189,22 @@ const Builder: React.FC<PropsType> = ({
             type="text"
             placeholder="Value"
             value={filter.value}
-            onChange={(e) => updateFilter(filter.id, "value", e.target.value)}
+            onChange={(e) =>
+              updateSelectedFilters(
+                selectedFilters.map((f) =>
+                  f.id === filter.id ? { ...f, value: e.target.value } : f
+                )
+              )
+            }
             className="w-1/3 p-2 border rounded-md"
           />
 
           <button
-            onClick={() => removeFilter(filter.id)}
+            onClick={() =>
+              updateSelectedFilters(
+                selectedFilters.filter((f) => f.id !== filter.id)
+              )
+            }
             className="p-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
           >
             ×
@@ -138,7 +214,12 @@ const Builder: React.FC<PropsType> = ({
 
       {/* Add Filter Button */}
       <button
-        onClick={addFilter}
+        onClick={() =>
+          updateSelectedFilters([
+            ...selectedFilters,
+            { id: nanoid(), column: "", operator: "=", value: "" },
+          ])
+        }
         className="mt-4 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
       >
         Add Filter

@@ -39,3 +39,5 @@ export interface Column {
     pk?: boolean;
     fk?: string | undefined;
 }
+
+export type SelectedColumnsType =  {[key:string]:boolean| SelectedColumnsType}
