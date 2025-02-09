@@ -7,19 +7,9 @@ import { AuthContext } from "./context/AuthContext";
 
 export default function Home() {
   const router = useRouter();
-  const [isSupabaseConnected, setIsSupabaseConnected] = useState(false);
-  const {userSession} = useContext(AuthContext)!;
+  const {userSession, isSupabaseConnected} = useContext(AuthContext)!;
 
-  useEffect(() => {
-    try {
-      const supabase = getSupabaseClient();
-      if (supabase) {
-        setIsSupabaseConnected(true);
-      } else setIsSupabaseConnected(false);
-    } catch (error) {
-      setIsSupabaseConnected(false);
-    }
-  }, []);
+
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">

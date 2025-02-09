@@ -36,11 +36,7 @@ export default function Dashboard() {
   }
   async function onLogout() {
     try {
-      const supabase = getSupabaseClient();
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
       clearUserSession();
-      router.push("/login");
     } catch (error) {
       notify("Something went wrong!", "error");
     }
