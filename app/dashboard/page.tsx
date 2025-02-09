@@ -15,6 +15,7 @@ export default function Dashboard() {
   const { clearUserSession, userSession } = useContext(AuthContext)!;
   const { notify } = useNotification();
   const { setSchema } = useContext(DatabaseSchemaContext)!;
+  const [loading,setLoading] = useState(false)
 
   async function fetchSchema() {
     try {
@@ -36,9 +37,14 @@ export default function Dashboard() {
   }
   async function onLogout() {
     try {
+      setLoading(true)
       clearUserSession();
-      router.push("/login"); // Redirect to login page
+      setTimeout(()=>{
+        router.push("/login"); // Redirect to login page
+        setLoading(false)
+      },1000)
     } catch (error) {
+      setLoading(false)
       notify("Something went wrong!", "error");
     }
   }
@@ -60,7 +66,7 @@ export default function Dashboard() {
           className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
           onClick={() => onLogout()}
         >
-          Logout
+          {loading ? "Loging Out...":"Logout"}
         </button>
       </div>
 

@@ -29,7 +29,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const pathname = usePathname();
 
-
   const initializeSupabase = async () => {
     try {
       const supabase = getSupabaseClient();
@@ -37,13 +36,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       setIsSupabaseConnected(true);
 
-      // Get current session if available
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setUserSession(session);
+    } catch (error) {
+      console.error("Supabase connection failed:", error);
+      setIsSupabaseConnected(false);
+      if (pathname !== "/") router.replace("/connect"); // Redirect to the connect page
+    }
+  };
 
+  useEffect(() => {
+    initializeSupabase();
+  }, []);
+
+  useEffect(() => {
+    if (isSupabaseConnected) {
       // Listen for auth state changes
+      let supabase = getSupabaseClient()
       const { data: authListener } = supabase.auth.onAuthStateChange(
         (_event, session) => {
           setUserSession(session);
@@ -51,17 +58,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       );
 
       return () => authListener?.subscription.unsubscribe();
-    } catch (error) {
-      console.error("Supabase connection failed:", error);
-      setIsSupabaseConnected(false);
-      if (pathname !== "/") 
-        router.replace("/connect"); // Redirect to the connect page
     }
-  };
-
-  useEffect(() => {
-    initializeSupabase();
-  }, []);
+  }, [isSupabaseConnected]);
 
   const clearUserSession = useCallback(async () => {
     try {
@@ -72,12 +70,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     } catch (error) {}
     setUserSession(null); // Clear session state
-   
   }, [router]);
 
-  const setAuthData = useCallback((payload: Session) => {
+  const setAuthData = (payload: Session) => {
+    console.log(payload)
     setUserSession(payload);
-  }, []);
+  };
 
   return (
     <AuthContext.Provider
@@ -91,4 +89,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </AuthContext.Provider>
   );
-}
+};
