@@ -49,7 +49,7 @@ export default function Dashboard() {
   useEffect(() => {
     fetchSchema();
   }, []);
-  
+
   return (
     <div className="p-6 font-sans">
       {/* Header */}

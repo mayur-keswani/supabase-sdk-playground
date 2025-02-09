@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { DatabaseSchemaContext } from "@/app/context/DatabaseSchemaContext";
 import { Column, SelectedColumnsType, FilterType } from "@/app/custom-types";
 import { nanoid } from "nanoid";
@@ -20,6 +20,14 @@ const Builder: React.FC<PropsType> = ({
   updateSelectedColumns,
   updateSelectedFilters,
 }) => {
+
+  const [openAccordions, setOpenAccordions] = useState<{ [key: string]: boolean }>(
+    {}
+  );
+  const toggleAccordion = (table: string) => {
+    setOpenAccordions((prev) => ({ ...prev, [table]: !prev[table] }));
+  };
+
   const { databaseSchema: schema } = useContext(DatabaseSchemaContext)!;
 
   const columns = useMemo(() => {
@@ -120,7 +128,7 @@ const Builder: React.FC<PropsType> = ({
   };
 
   return (
-    <div className="h-lvh p-4 border-r border-gray-300 bg-white shadow-md rounded-lg">
+    <div className="h-lvh p-4 border-r border-gray-300 bg-white shadow-md rounded-lg overflow-y-scroll">
       <h5 className="text-lg font-semibold mb-3">Select Table & Columns</h5>
       <select
         className="w-full p-2 mb-3 border rounded-md"
@@ -136,16 +144,46 @@ const Builder: React.FC<PropsType> = ({
       </select>
 
       {selectedTable && (
-        <div>
+        <div className="h-[200px] overflow-y-scroll">
           <h6 className="text-md font-medium mb-2">Select Columns</h6>
-          <div className="h-[300px] overflow-y-scroll">
+          <div>
             {renderColumns(selectedTable)}
           </div>
         </div>
       )}
 
+      {selectedTable && (
+        <div className="h-[150px] overflow-y-scroll">
+          <h6 className="text-md font-medium mb-2">Select Relationship</h6>
+          <div>
+           {schema[selectedTable].relationships.map(relatedTable=>(
+              <div key={relatedTable} className="border-b">
+              {/* Accordion Header */}
+              <button
+                className="w-full flex justify-between items-center p-3 text-left font-medium bg-gray-100 hover:bg-gray-200"
+                onClick={() => toggleAccordion(relatedTable)}
+              >
+                {relatedTable}
+                <span className={`transform transition ${openAccordions[relatedTable] ? "rotate-180" : "rotate-0"}`}>
+                  ▼
+                </span>
+              </button>
+
+              {openAccordions[relatedTable] && (
+            <div className="p-3 bg-white border-t">
+              <div className="h-[150px] overflow-y-scroll ml-3">
+                {renderColumns(relatedTable, 1, [relatedTable])}
+              </div>
+            </div>
+          )}
+              </div>
+           ))}
+          </div>
+        </div>
+      )}
+
       {/* Filters */}
-      <h5 className="text-lg font-semibold mt-4">Filters</h5>
+      <h5 className="h-fit overflow-y-scroll text-lg font-semibold mt-4">Filters</h5>
       {selectedFilters.map((filter) => (
         <div key={filter.id} className="flex items-center gap-2 mt-2">
           <select
@@ -224,6 +262,7 @@ const Builder: React.FC<PropsType> = ({
       >
         Add Filter
       </button>
+
     </div>
   );
 };

@@ -40,8 +40,34 @@ export const DatabaseSchemaProvider = ({ children }: { children: ReactNode }) =>
         title: key,
         is_view: checkView(key),
         columns: colGroup,
+        relationships:[]
       };
     }
+   
+    Object.entries(tableGroup).forEach(([key1,value1])=>{
+      let tableName = key1;
+      let tableColumns = value1.columns
+
+      let pkColumn = tableColumns?.find(col=> col.pk)
+      let relationshipsKey = `${tableName}.${pkColumn?.title}`
+      let relationships: string[] = []
+      Object.entries(tableGroup).forEach(([key2,value2])=>{
+          if(key2 !== key1){ 
+            let innerTableName = key2;
+            let innerTableColumns = value2.columns;
+            let isRelationshipExist = innerTableColumns?.findIndex(col=> col.fk?.toString() == relationshipsKey.toString()) !== -1
+
+            if(isRelationshipExist){
+              relationships.push(innerTableName)
+            }
+
+          }
+      })
+      tableGroup[key1]['relationships'] = relationships
+    })
+
+
+    
 
     setDatabaseSchema(tableGroup);
   };

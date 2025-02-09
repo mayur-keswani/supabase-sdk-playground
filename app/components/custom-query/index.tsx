@@ -21,7 +21,7 @@ const CustomQuery: React.FC = () => {
         "supabase",
         `
         return (async () => {
-          return ${sdkCode};
+          return await ${sdkCode};
         })();
       `
       )(supabase);
@@ -41,7 +41,7 @@ const CustomQuery: React.FC = () => {
         <h3 className="text-lg font-semibold mb-2">Enter Supabase SDK Code</h3>
         <textarea
           rows={8}
-          placeholder="Enter your Supabase SDK code..."
+          placeholder="supabase.from(tableName).select(*)"
           value={sdkCode}
           onChange={(e) => setSdkCode(e.target.value)}
           className="w-full p-2 border rounded-md font-mono bg-gray-50 focus:ring focus:ring-blue-300"
@@ -52,6 +52,7 @@ const CustomQuery: React.FC = () => {
           }`}
           onClick={executeCode}
           disabled={loading}
+
         >
           {loading ? "Executing..." : "Run Code"}
         </button>

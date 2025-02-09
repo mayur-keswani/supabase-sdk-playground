@@ -10,6 +10,7 @@ export interface Table {
     title: string;
     columns?: Column[];
     // position?: Position;
+    relationships:string[]
     is_view?: boolean;
 }
 
