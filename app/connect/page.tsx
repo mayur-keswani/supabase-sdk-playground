@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useRouter } from "next/navigation";
 import getSupabaseClient from "../utils/supabase";
 import { useNotification } from "../context/NotificationContext";
+import { AuthContext } from "../context/AuthContext";
 
 export default function ConnectPage() {
   const [supabaseUrl, setSupabaseUrl] = useState("");
   const [supabaseAnonKey, setSupabaseAnonKey] = useState("");
   const [loading, setLoading] = useState(false);
+  const {updateSupabaseConnected} = useContext(AuthContext)!;
   const { notify } = useNotification();
   const router = useRouter();
 
@@ -20,7 +22,7 @@ export default function ConnectPage() {
 
     try {
       getSupabaseClient(supabaseUrl, supabaseAnonKey);
-     
+      updateSupabaseConnected(true)
       notify("Supabase client initialized!", "success");
       router.push("/login"); // Redirect after successful connection
     } catch (err) {

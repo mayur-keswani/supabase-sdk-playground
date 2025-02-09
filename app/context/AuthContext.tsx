@@ -16,6 +16,7 @@ interface AuthContextType {
   setAuthData: (payload: Session) => void;
   clearUserSession: () => void;
   isSupabaseConnected: boolean;
+  updateSupabaseConnected:(payload:boolean)=>void
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -84,6 +85,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setAuthData,
         clearUserSession,
         isSupabaseConnected,
+        updateSupabaseConnected:(value)=>{
+          setIsSupabaseConnected(value)
+        }
       }}
     >
       {children}
