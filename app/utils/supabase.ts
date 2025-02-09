@@ -9,10 +9,16 @@ let supabase: SupabaseClient | null = null;
  * Returns the Supabase configuration stored in localStorage (if any).
  */
 export const getSupabaseConfig = () => {
-  return {
-    supabaseUrl: localStorage.getItem("supabaseUrl") ?? "",
-    supabaseAnonKey: localStorage.getItem("supabaseAnonKey") ?? "",
-  };
+
+  if(typeof document!==undefined){
+    return {
+      supabaseUrl: localStorage.getItem("supabaseUrl") ?? "",
+      supabaseAnonKey: localStorage.getItem("supabaseAnonKey") ?? "",
+    };
+  }else{
+    throw new Error("Something went wrong!")
+  }
+ 
 };
 
 /**
