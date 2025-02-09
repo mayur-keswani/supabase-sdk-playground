@@ -31,19 +31,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Fetch session on load (persists session on refresh)
   const fetchSession = async () => {
+    let subscription: { data: any };
     try {
       const supabase = getSupabaseClient();
       if (supabase) {
-        const { data, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error("Error fetching session:", error);
-        } else {
-          setUserSession(data?.session ?? null);
-        }
+        subscription = supabase.auth.onAuthStateChange((_event, session) => {
+          setUserSession(session);
+        });
       }
     } catch (error) {
-      
+      console.log({ error });
     }
+
+    return () => subscription && subscription.data.subscription.unsubscribe();
   };
 
   useEffect(() => {

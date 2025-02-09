@@ -25,7 +25,7 @@ const Builder: React.FC<PropsType> = ({
 
   const {databaseSchema:schema} = useContext(DatabaseSchemaContext)!;
 
-  const columns = useMemo(()=>{ return selectedTable? schema?.[selectedTable]?.properties : []},[selectedTable])
+  const columns = useMemo(()=>{ return selectedTable? schema?.[selectedTable]?.columns : []},[selectedTable])!
   
 
   const addFilter = () => {
@@ -74,16 +74,16 @@ const Builder: React.FC<PropsType> = ({
       {Object.keys(columns).length > 0 && (
         <div>
           <h6 className="text-md font-medium mb-2">Select Columns</h6>
-          <div className="grid grid-cols-2 gap-2">
-            {Object.keys(columns).map((col) => (
-              <label key={col} className="flex items-center space-x-2">
+          <div className="h-[300px] overflow-y-scroll">
+            {(columns).map((col) => (
+              <label key={col.title} className="flex items-center space-x-2">
                 <input
                   type="checkbox"
-                  checked={selectedColumns.includes(col)}
-                  onChange={() => updateSelectedColumns(col)}
+                  checked={selectedColumns.includes(col.title)}
+                  onChange={() => updateSelectedColumns(col.title)}
                   className="accent-blue-600"
                 />
-                <span>{col}</span>
+                <span>{col.title}</span>
               </label>
             ))}
           </div>

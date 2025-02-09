@@ -27,9 +27,9 @@ export default function Dashboard() {
           },
         }
       );
-      const result = await response.json();
+      const schemaResult = await response.json();
 
-      setSchema(result?.definitions!);
+      setSchema(schemaResult?.definitions!, schemaResult.paths);
     } catch (error) {
       notify("Failed to fetch Database schema!", "error");
     }

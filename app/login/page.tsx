@@ -8,7 +8,13 @@ import { AuthContext } from "../context/AuthContext";
 
 export default function LoginScreen() {
   const router = useRouter();
+  const {userSession} =useContext(AuthContext)!;
 
+  useEffect(()=>{
+    if(userSession){
+      router.push('/dashboard')
+    }
+  },[userSession])
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
