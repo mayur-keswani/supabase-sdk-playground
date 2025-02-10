@@ -33,12 +33,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const initializeSupabase = async () => {
     try {
       const supabase = getSupabaseClient();
-      if (!supabase) throw new Error("Supabase client not available");
+      if (!supabase) {
+         throw ("Supabase client not available");
+      }
 
       setIsSupabaseConnected(true);
 
     } catch (error) {
-      console.error("Supabase connection failed:", error);
+      console.log("❌ Supabase connection failed:", error);
       setIsSupabaseConnected(false);
       if (pathname !== "/") router.replace("/connect"); // Redirect to the connect page
     }

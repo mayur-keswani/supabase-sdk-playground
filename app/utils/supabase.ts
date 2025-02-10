@@ -36,31 +36,35 @@ export default function getSupabaseClient(
   supabaseUrl: string | null = SUPABASE_URL,
   supabaseAnonKey: string | null = SUPABASE_ANON_KEY
 ): SupabaseClient {
-  if (!supabase && typeof window !== "undefined" ) {
-
-    // Only access localStorage in the browser  
-    let storedConfig = getSupabaseConfig();
-    
-    supabaseUrl = supabaseUrl || storedConfig.supabaseUrl;
-    supabaseAnonKey = supabaseAnonKey || storedConfig.supabaseAnonKey;
-
-    // Validate credentials
-    if ((!supabaseUrl || !supabaseAnonKey)) {
-      
-      throw new Error("Supabase URL and Anon Key are required for initialization.");
-    }
-
-    // Create Supabase client
-    supabase = createClient(supabaseUrl, supabaseAnonKey);
-    console.log("✅ Supabase client initialized.");
-
-    if (typeof window !== "undefined") {    // Store credentials in localStorage for reuse
-      localStorage.setItem("supabaseUrl", supabaseUrl);
-      localStorage.setItem("supabaseAnonKey", supabaseAnonKey);
-    }
-  } else {
+  if (supabase) {
     console.log("♻️ Reusing existing Supabase client.");
+    return supabase;
   }
+
+
+  // Only access localStorage in the browser  
+  let storedConfig = getSupabaseConfig();
+
+  supabaseUrl = supabaseUrl || storedConfig.supabaseUrl;
+  supabaseAnonKey = supabaseAnonKey || storedConfig.supabaseAnonKey;
+
+  // Validate credentials
+  if ((!supabaseUrl || !supabaseAnonKey)) {
+    console.log("🚨 Supabase URL and Anon Key missing.");
+    return null as any; // Prevent crashing
+  }
+
+  // Create Supabase client
+  supabase = createClient(supabaseUrl, supabaseAnonKey);
+  console.log("✅ Supabase client initialized.");
+
+  if (typeof window !== "undefined") {    // Store credentials in localStorage for reuse
+    localStorage.setItem("supabaseUrl", supabaseUrl);
+    localStorage.setItem("supabaseAnonKey", supabaseAnonKey);
+  }
+
+
+
 
   return supabase!;
 }
