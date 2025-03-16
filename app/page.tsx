@@ -17,7 +17,7 @@ export default function Home() {
         <h1 className="text-4xl font-bold mb-1">
           The Supabase SDK Playground 
         </h1>
-        <p className="text-2xl font-semibold mb-4">Built for Supabase' Developers</p>
+        <p className="text-2xl font-semibold mb-4">Built for Developers using Supabase as Backend Service</p>
         <button
           type="button"
           onClick={() => {
