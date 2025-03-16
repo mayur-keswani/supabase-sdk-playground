@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import getSupabaseClient from "../../utils/supabase";
-import { SelectedColumnsType } from "@/app/custom-types";
+import { OperationType, SelectedColumnsType } from "@/app/custom-types";
+import { DatabaseSchemaContext } from "@/app/context/DatabaseSchemaContext";
 
 interface FilterType {
   column: string;
@@ -14,15 +15,19 @@ interface QueryBuilderProps {
   selectedTable: string | null;
   selectedColumns: SelectedColumnsType;
   selectedFilters: FilterType[];
+  selectedOperation: OperationType;
 }
 
 const QueryPreview: React.FC<QueryBuilderProps> = ({
   selectedTable,
   selectedColumns,
   selectedFilters,
+  selectedOperation
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [response, setResponse] = useState<string | null>(null);
+  const { databaseSchema: schema } = useContext(DatabaseSchemaContext)!;
+  
 
   const buildSelectQuery = (columns: SelectedColumnsType): string => {
     return Object.entries(columns)
@@ -34,22 +39,76 @@ const QueryPreview: React.FC<QueryBuilderProps> = ({
       })
       .join(", ");
   };
+  const buildInsertQuery = (columns: SelectedColumnsType): Record<string,string> => {
+    let payload:Record<string,string> = {}
+    
+     Object.entries(columns)
+      .map(([key, value]) => {
+        if(typeof value === 'string')
+          payload[key] = value;
+        else 
+         payload[key] = ''
+      })
+    
+    return payload;
+  };
 
   const generateQuery = useMemo(() => {
+    if (!selectedTable) return "";
+    let query = `supabase.from('${selectedTable}')`;
+    if(selectedOperation === 'SELECT'){
+      const selectString = buildSelectQuery(selectedColumns);
+      query +=  `.select('${selectString}')`;
+    }
+    else if(selectedOperation === 'INSERT'){
+      const insertPayload = buildInsertQuery(selectedColumns);
+      query +=  `.insert(${JSON.stringify(insertPayload)}).select('*')`;
+    }
+    else if(selectedOperation === 'UPDATE'){
+      const insertPayload = buildInsertQuery(selectedColumns);
+      query +=  `.update(${JSON.stringify(insertPayload)}).select('*')`;
+    }
+    else if(selectedOperation === 'DELETE'){
+      const insertPayload = buildInsertQuery(selectedColumns);
+      query +=  `.delete(${JSON.stringify(insertPayload)}).select('*')`;
+    }
+    else if(selectedOperation === 'UPSERT'){
+      const insertPayload = buildInsertQuery(selectedColumns);
+      let primaryKeys:string[]=[]
+      Object.entries(schema?.[selectedTable]?.columns ?? []).map(([key,value])=>{
 
-    if (!selectedTable || Object.keys(selectedColumns).length === 0) return "";
-    const selectString = buildSelectQuery(selectedColumns);
-
-    let query = `supabase.from('${selectedTable}').select('${selectString}')`;
+       
+        if(value.pk){
+          primaryKeys.push(value.title)
+        }
+      });
+      query +=  `.upsert(${JSON.stringify(insertPayload)}, { onConflict:[${primaryKeys.map(pk => `"${pk}"`).join(', ')}] }).select('*')`;
+    }
+   
 
     selectedFilters.forEach((filter) => {
       if (filter.column && filter.value) {
-        query += `.eq('${filter.column}', '${filter.value}')`;
+        if(filter.operator=='='){
+          query += `.eq('${filter.column}', '${filter.value}')`;
+        }
+        else if(filter.operator=='>'){
+          query += `.gt('${filter.column}', '${filter.value}')`;
+        }
+        else if(filter.operator=='>='){
+          query += `.gte('${filter.column}', '${filter.value}')`;
+        }
+        else if(filter.operator=='<'){
+          query += `.lt('${filter.column}', '${filter.value}')`;
+        }
+        else if(filter.operator=='<='){
+          query += `.lte('${filter.column}', '${filter.value}')`;
+        }
+        
       }
     });
 
     return query;
-  }, [selectedTable, selectedColumns, selectedFilters]);
+  }, [selectedTable, selectedColumns, selectedFilters,selectedOperation]);
 
   /** Executes the query using Supabase */
   const executeQuery = async (sdkCode: string) => {
@@ -78,9 +137,11 @@ const QueryPreview: React.FC<QueryBuilderProps> = ({
       <h5 className="text-lg font-semibold mb-3">Query Editor</h5>
       
       <CodeMirror
+        editable={false}
         value={generateQuery}
         height="200px"
         extensions={[javascript({ jsx: true })]}
+        aria-disabled={true}
       />
 
       <button

@@ -57,7 +57,7 @@ export default function Dashboard() {
     <div className="p-6 font-sans">
       {/* Header */}
       <div className="flex justify-between items-center border-b-2 pb-1">
-        <h3 className="text-2xl font-bold text-gray-800 dark:text-white tracking-wide">
+        <h3 className="text-2xl font-bold text-gray-800 tracking-wide">
           Welcome, {userSession?.user.user_metadata.first_name || ""}{" "}
           {userSession?.user.user_metadata.last_name || ""} 👋
         </h3>

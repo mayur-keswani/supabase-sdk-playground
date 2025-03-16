@@ -1,10 +1,3 @@
-export interface FilterType {
-    id: string;
-    column: string;
-    operator: string;
-    value: string;
-}
-
 
 export interface Table {
     title: string;
@@ -41,4 +34,13 @@ export interface Column {
     fk?: string | undefined;
 }
 
-export type SelectedColumnsType =  {[key:string]:boolean| SelectedColumnsType}
+export interface FilterType {
+    id: string;
+    column: string;
+    operator: string;
+    value: string;
+}
+
+export type SelectedColumnsType =  {[key:string]:boolean | string | SelectedColumnsType}
+
+export type OperationType = "SELECT" | "INSERT" | "UPDATE" | "DELETE" | "UPSERT"
