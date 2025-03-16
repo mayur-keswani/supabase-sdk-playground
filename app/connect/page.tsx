@@ -15,10 +15,12 @@ export default function ConnectPage() {
   const router = useRouter();
 
   const handleInitialize = async () => {
-    setLoading(true);
-    if (!supabaseAnonKey || !supabaseUrl) {
+   
+    if (!!!supabaseAnonKey || !!!supabaseUrl) {
       notify("Please, provide Supabase Anon key and URL", "warning");
+      return;
     }
+    setLoading(true);
 
     try {
       getSupabaseClient(supabaseUrl, supabaseAnonKey);
