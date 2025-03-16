@@ -2,7 +2,7 @@ import React, { useContext, useMemo, useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import getSupabaseClient from "../../utils/supabase";
-import { OperationType, SelectedColumnsType } from "@/app/custom-types";
+import { OperationType, SelectedColumnsType, SelectedSortByType } from "@/app/custom-types";
 import { DatabaseSchemaContext } from "@/app/context/DatabaseSchemaContext";
 
 interface FilterType {
@@ -16,13 +16,15 @@ interface QueryBuilderProps {
   selectedColumns: SelectedColumnsType;
   selectedFilters: FilterType[];
   selectedOperation: OperationType;
+  selectedSortBy:SelectedSortByType;
 }
 
 const QueryPreview: React.FC<QueryBuilderProps> = ({
   selectedTable,
   selectedColumns,
   selectedFilters,
-  selectedOperation
+  selectedOperation,
+  selectedSortBy
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [response, setResponse] = useState<string | null>(null);
@@ -106,9 +108,12 @@ const QueryPreview: React.FC<QueryBuilderProps> = ({
         
       }
     });
-
+    
+    if(selectedSortBy?.column){
+      query += `.order('${selectedSortBy.column}', { ascending: ${selectedSortBy.ascending} })`;
+    }
     return query;
-  }, [selectedTable, selectedColumns, selectedFilters,selectedOperation]);
+  }, [selectedTable, selectedColumns, selectedFilters,selectedOperation,selectedSortBy]);
 
   /** Executes the query using Supabase */
   const executeQuery = async (sdkCode: string) => {

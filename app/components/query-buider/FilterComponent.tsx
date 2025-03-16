@@ -39,7 +39,7 @@ const FilterComponent = ({
 
       {/* Filter Dropdown Panel */}
       {isFilterOpen && (
-        <div className="absolute left-0 max-h-[250px] overflow-y-scroll  mt-2 w-96 bg-white border shadow-lg rounded-lg p-4 z-50">
+        <div className="absolute left-0 max-h-[250px] overflow-scroll mt-2 w-80 md:w-96 bg-white border shadow-lg rounded-lg p-4 z-50">
           {selectedFilters.length == 0 && (
             <p className="text-gray-700 font-semibold">
               No filters applied to this view

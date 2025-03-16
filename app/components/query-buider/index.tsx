@@ -2,6 +2,7 @@ import {
   FilterType,
   OperationType,
   SelectedColumnsType,
+  SelectedSortByType,
 } from "@/app/custom-types";
 import React, { useState } from "react";
 import QueryConfigurator from "./QueryConfigurator";
@@ -13,6 +14,7 @@ const QueryBuilder = () => {
     {}
   );
   const [selectedFilters, setSelectedFilters] = useState<FilterType[]>([]);
+  const [selectedSortBy,setSelectedSortBy] = useState<SelectedSortByType>({column:'',ascending:true})
   const [selectedOperation, setSelectedOperation] =
     useState<OperationType>("SELECT");
 
@@ -23,6 +25,8 @@ const QueryBuilder = () => {
           selectedTable={selectedTable}
           selectedColumns={selectedColumns}
           selectedFilters={selectedFilters}
+          selectedOperation={selectedOperation}
+          selectedSortBy = {selectedSortBy}
           updateSelectedTable={(value: string) => {
             setSelectedTable(value);
           }}
@@ -32,7 +36,9 @@ const QueryBuilder = () => {
           updateSelectedFilters={(values: FilterType[]) => {
             setSelectedFilters(values);
           }}
-          selectedOperation={selectedOperation}
+          updateSelectedSortBy={(column:string,ascending:boolean)=>{
+            setSelectedSortBy({column,ascending})
+          }}
           updateSelectedOperation={(value: OperationType) => {
             setSelectedOperation(value);
           }}
@@ -43,6 +49,7 @@ const QueryBuilder = () => {
           selectedTable={selectedTable}
           selectedColumns={selectedColumns}
           selectedFilters={selectedFilters}
+          selectedSortBy={selectedSortBy}
           selectedOperation={selectedOperation}
         />
       </div>

@@ -44,3 +44,8 @@ export interface FilterType {
 export type SelectedColumnsType =  {[key:string]:boolean | string | SelectedColumnsType}
 
 export type OperationType = "SELECT" | "INSERT" | "UPDATE" | "DELETE" | "UPSERT"
+
+export type SelectedSortByType = {
+    column:string,
+    ascending:boolean
+}

@@ -5,17 +5,21 @@ import {
   SelectedColumnsType,
   FilterType,
   OperationType,
+  SelectedSortByType,
 } from "@/app/custom-types";
 import FilterComponent from "./FilterComponent";
+import SortComponent from "./SortComponent";
 
 interface PropsType {
   selectedTable: string | null;
   selectedColumns: SelectedColumnsType;
   selectedFilters: FilterType[];
   selectedOperation: OperationType;
+  selectedSortBy:SelectedSortByType;
   updateSelectedTable: (table: string) => void;
   updateSelectedColumns: (values: SelectedColumnsType) => void;
   updateSelectedFilters: (filters: FilterType[]) => void;
+  updateSelectedSortBy:(column:string,ascending:boolean)=>void;
   updateSelectedOperation: (value: OperationType) => void;
 }
 
@@ -23,10 +27,12 @@ const Builder: React.FC<PropsType> = ({
   selectedTable,
   selectedColumns,
   selectedFilters,
+  selectedSortBy,
   selectedOperation,
   updateSelectedTable,
   updateSelectedColumns,
   updateSelectedFilters,
+  updateSelectedSortBy,
   updateSelectedOperation,
 }) => {
   const [openAccordions, setOpenAccordions] = useState<{
@@ -186,6 +192,7 @@ const Builder: React.FC<PropsType> = ({
 
   return (
     <div className="h-lvh p-4 border-r border-gray-300 bg-white shadow-md rounded-lg overflow-y-scroll">
+      
       {/* Operation Type Selector */}
       <h5 className="text-lg font-semibold mb-3">Operation</h5>
       <select
@@ -201,6 +208,8 @@ const Builder: React.FC<PropsType> = ({
         <option value="DELETE">DELETE</option>
         <option value="UPSERT">UPSERT</option>
       </select>
+
+      {/* SELECT  TABLE */}
       <h5 className="text-lg font-semibold mb-3">Select Table & Columns</h5>
       <select
         className="w-full p-2 mb-3 border rounded-md"
@@ -215,6 +224,7 @@ const Builder: React.FC<PropsType> = ({
         ))}
       </select>
 
+      <div className="flex gap-2"> 
       {/* FILTERS */}
       {selectedTable && (
         <FilterComponent
@@ -224,6 +234,18 @@ const Builder: React.FC<PropsType> = ({
         />
       )}
 
+      {/* SORTING */}
+      {
+        selectedTable && (
+          <SortComponent
+            columns={schema?.[selectedTable!]?.columns!}
+            selectedSortBy={selectedSortBy}
+            updateSelectedSortBy={updateSelectedSortBy}
+          />
+        )
+      }
+      </div>
+
       {/* Columns */}
       {selectedTable && (
         <div className="max-h-[350px] overflow-y-scroll">
@@ -232,6 +254,7 @@ const Builder: React.FC<PropsType> = ({
         </div>
       )}
 
+      {/* RELATIONSHIP */}
       {selectedTable && (
         <div className="max-h-[350px] overflow-y-scroll">
           <h6 className="text-md font-medium mb-2">Select Relationship</h6>
