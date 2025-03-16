@@ -4,14 +4,21 @@ An interactive Supabase SDK Playground that allows you to build, edit, and execu
 
 ## ✨ Features
 
-✅ Query Builder – Select tables, columns, relations tables'colums and apply filters to auto-generate Supabase queries.✅ Custom Query Editor – Write and execute your own Supabase SDK code.✅ Real-time Execution – Run queries and view formatted JSON responses instantly.✅ Authentication – Secure user sessions with Supabase Auth.✅ Clean UI – Intuitive UI built with React, Next.js, and Tailwind CSS.
+✅ Query Builder 
+    – Select tables, columns, relations tables'colums and apply filters, sorting to auto-generate Supabase queries. 
+    - User can perform operation SELECT/INSERT/UPDATE/UPSERT/DELETE onto tables.
+✅ Custom Query Editor 
+    – Write and execute your own Supabase SDK code.
+✅ Real-time Execution – Run queries and view formatted JSON responses instantly.
+✅ Authentication – Secure user sessions with Supabase Auth.
+✅ Clean UI – Intuitive UI built with React, Next.js, and Tailwind CSS.
 
 
 
 ### ⚡ Usage
 1️. Connect with Supabase Project using Supabase'URL and Anon Key.
 2. Login with your Supabase credentials.
-3. Use Query Builder to select a table, columns, and filters.
+3. Use Query Builder to select/insert/update/delete/upsert into a table, columns, with filters.
 4. Generate & Execute Queries dynamically using Supabase SDK.
 5. Write Custom Queries in the editor and run them with real-time results
 
