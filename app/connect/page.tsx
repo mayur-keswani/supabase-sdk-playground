@@ -16,6 +16,11 @@ export default function ConnectPage() {
 
   const handleInitialize = async () => {
    
+    if(typeof window === undefined){
+      return;
+    }
+    localStorage.clear();
+    
     if (!!!supabaseAnonKey || !!!supabaseUrl) {
       notify("Please, provide Supabase Anon key and URL", "warning");
       return;

@@ -39,11 +39,6 @@ export default function Dashboard() {
     try {
       setLoading(true)
       clearUserSession();
-      if(typeof window !==undefined){
-        localStorage.removeItem('supabaseUrl')
-        localStorage.removeItem('supabaseAnonKey')
-
-      }
       setTimeout(()=>{
         router.push("/login"); // Redirect to login page
         setLoading(false)
