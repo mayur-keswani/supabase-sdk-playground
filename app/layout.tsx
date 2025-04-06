@@ -70,6 +70,9 @@ export const metadata: Metadata = {
     google: 'Xnd4fGrwx1Tuik8ldwIlerKOstJ64S_97NKmr-Dns5A',
   },
 };
+
+<meta name="google-adsense-account" content="ca-pub-5545104283099959"></meta>
+
 export default function RootLayout({
   children,
 }: Readonly<{
