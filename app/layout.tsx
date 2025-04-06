@@ -4,6 +4,8 @@ import "./globals.css";
 import { NotificationProvider } from "./context/NotificationContext";
 import { DatabaseSchemaProvider } from "./context/DatabaseSchemaContext";
 import { AuthProvider } from "./context/AuthContext";
+import { Analytics } from '@vercel/analytics/next';
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,7 +23,7 @@ export const metadata: Metadata = {
     template: '%s | Supabase Query Playground',
   },
   description: 'A powerful, intuitive database management tool for Supabase developers. Explore, query, and manage your Supabase database with ease.',
-  keywords: 'supabase, database management, sql editor, database query, postgresql, database development, developer tools',
+  keywords: 'supabase, supabase sdk playground, sdk client tester, supabase API tester, database runner, developer tools, API runner,API tester, custom queries',
   authors: [{ name: 'Mayur Keswani' }],
   creator: 'Mayur Keswani',
   publisher: 'Mayur Keswani',
@@ -82,6 +84,7 @@ export default function RootLayout({
         <NotificationProvider>
           <DatabaseSchemaProvider>
             <AuthProvider>{children}</AuthProvider>
+            <Analytics mode="production" />
           </DatabaseSchemaProvider>
         </NotificationProvider>
       </body>
