@@ -88,6 +88,7 @@ export default function RootLayout({
           <DatabaseSchemaProvider>
             <AuthProvider>{children}</AuthProvider>
             <Analytics mode="production" />
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5545104283099959" crossOrigin="anonymous"></script>
           </DatabaseSchemaProvider>
         </NotificationProvider>
       </body>
